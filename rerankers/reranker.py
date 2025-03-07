@@ -8,6 +8,8 @@ DEFAULTS = {
     "jina": {"en": "jina-reranker-v1-base-en"},
     "pinecone": {"en": "pinecone-rerank-v0"},
     "cohere": {"en": "rerank-english-v3.0", "other": "rerank-multilingual-v3.0"},
+    # TODO: @sheshansh update model name before release
+    "contextual": {"en": "v2"},
     "voyage": {"en": "rerank-lite-1"},
     "mixedbread.ai": {"en": "mixedbread-ai/mxbai-rerank-large-v1"},
     "cross-encoder": {
@@ -60,7 +62,7 @@ DEPS_MAPPING = {
     "UPRRanker": "transformers",
 }
 
-PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "pinecone", "text-embeddings-inference"]
+PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "pinecone", "contextual", "text-embeddings-inference"]
 
 def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> Optional[str]:
     # If an explicit model_type is provided and it isn’t one of the known API providers,
@@ -86,6 +88,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
         model_mapping = {
             "cohere": "APIRanker",
             "pinecone": "APIRanker",
+            "contextual": "APIRanker",
             "jina": "APIRanker",
             "voyage": "APIRanker",
             "text-embeddings-inference": "APIRanker",
@@ -114,6 +117,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "colbert": "ColBERTRanker",
             "cohere": "APIRanker",
             "pinecone": "APIRanker",
+            "contextual": "APIRanker",
             "jina": "APIRanker",
             "voyage": "APIRanker",
             "text-embeddings-inference": "APIRanker",

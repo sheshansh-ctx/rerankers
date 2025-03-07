@@ -16,6 +16,7 @@ URLS = {
     "voyage": "https://api.voyageai.com/v1/rerank",
     "mixedbread.ai": "https://api.mixedbread.ai/v1/reranking",
     "pinecone": "https://api.pinecone.io/rerank",
+    "contextual": "https://api.contextual.ai/v1/rerank",
 }
 AUTHORIZATION_KEY_MAPPING = {
     "pinecone": "Api-Key"
@@ -103,17 +104,17 @@ class APIRanker(BaseRanker):
         self,
         query: str,
         docs: Union[str, List[str], Document, List[Document]],
+        instruction: Optional[str] = None,
         doc_ids: Optional[Union[List[str], List[int]]] = None,
         metadata: Optional[List[dict]] = None,
     ) -> RankedResults:
         docs = prep_docs(docs, doc_ids, metadata)
-        payload = self._format_payload(query, docs)
+        payload = self._format_payload(query, docs, instruction)
         response = requests.post(self.url, headers=self.headers, data=payload)
         results = self._parse_response(response.json(), docs)
         return RankedResults(results=results, query=query, has_scores=True)
 
-
-    def _format_payload(self, query: str, docs: List[str]) -> str:
+    def _format_payload(self, query: str, docs: List[str], instruction: Optional[str] = None) -> str:
         top_key = (
             "top_n" if self.api_provider not in ["voyage", "mixedbread.ai"] else "top_k"
         )
@@ -131,6 +132,10 @@ class APIRanker(BaseRanker):
             top_key: len(docs),
             return_documents_key: True,
         }
+
+        if instruction is not None:
+            payload["instruction"] = instruction
+
         return json.dumps(payload)
 
     def score(self, query: str, doc: str) -> float:
